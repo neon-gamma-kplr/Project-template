@@ -7,9 +7,8 @@ import shutil  # to save it locally
 from PIL import Image
 import ast
 from tensorflow.keras import backend, layers
-import ast
-from tensorflow.keras import backend, layers
 import os
+
 
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'kjqè73JJhsjhvahel'
@@ -28,6 +27,7 @@ class FixedDropout(layers.Dropout):
 model = load_model('/workspace/Project-template/model.h5',
                    custom_objects={'FixedDropout': FixedDropout(rate=0.4)})
 
+
 model.make_predict_function()
 # reading the data from the file
 with open('dictionnaire.txt') as f:
@@ -35,19 +35,25 @@ with open('dictionnaire.txt') as f:
 # reconstructing the data as a dictionary
 d = ast.literal_eval(data)
 
-#TO DO 
-#Try to fill the predict_label function , where we will load image , transform it to an array , reshape it and predict the class of the image
+
+# TO DO 
+# Try to fill the predict_label function , where we will load image, transform it to an array, reshape it and predict the class of the image
 def predict_label(img_path):
-    i = #add image.load_img method and take as argument the image path and the target image size (240,240)
-    i = #transform the image to an array of pixels
-    i = # reshape the image to (1, 240, 240, 3) size
-    p = #add model.predict 
+    # add image.load_img method and take as argument the image path and the target image size (240,240)
+    i = image.load_img(img_path, target_size=(240, 240))
+    # transform the image to an array of pixels
+    i = np.asarray(i)
+    # print(i.shape) # (240, 240, 3)
+    # reshape the image to (1, 240, 240, 3) size
+    i = i.reshape(1, 240, 240, 3)
+    # print(i.shape) # (1, 240, 240, 3)
+    # add model.predict
+    p = model.predict(i)
     in_max = np.where(p[0] == np.max(p))
     return d[in_max[0][0]]
 
+
 # routes
-
-
 @app.route("/", methods=['GET', 'POST'])
 def main():
     return render_template("index.html")
